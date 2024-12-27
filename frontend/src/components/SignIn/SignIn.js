@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from "react-router-dom"
-import './SignIn.module.css';
+import styles from './SignIn.module.css';
 
 export default class Signin extends React.Component {
     render() {
         return(
-            <div className="form-container">
+            <div className={styles.formcontainer}>
                 <h2>Login</h2>
                 <form>
                     <div className="form-control">

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from "react-router-dom"
+import styles from '../SignIn/SignIn.module.css';
 
 export default class SignUp extends React.Component {
     render() {
         return(
-            <div className="form-container">
+            <div className={styles.formcontainer}>
                 <h2>Sign Up</h2>
                 <form>
                     <div className="form-control">
