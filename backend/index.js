@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 // Create instance of express application
 const app = express();
@@ -16,7 +16,10 @@ const connection = mysql.createConnection({
 });
 
 connection.connect(error => {
-    if (error) {
+    if (!error) {
+        console.log("Successfully connected to SQL database.");
+    }
+    else {
         console.log("Error has occured connecting to SQL Database.");
         throw error;
     }
