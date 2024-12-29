@@ -1,8 +1,10 @@
 const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors');
 
 // Create instance of express application
 const app = express();
+app.use(cors());
 
 // Specify a port number for the server
 const port = 3001;
@@ -23,6 +25,23 @@ connection.connect(error => {
         console.log("Error has occured connecting to SQL Database.");
         throw error;
     }
+})
+
+// Add a new user to users table
+app.post('/new-user', (req, res) => {
+    var reqBody = req.body;
+
+    const username = req.username;
+    const password = req.password;
+    
+    const queryString = `INSERT INTO users (username, passHash) VALUES ('${username}', '${password})`;
+    connection.query(mysql, (err, res) => {
+        if (err) {
+            return res.json({ error: err.sqlMessage });
+        } else {
+            return res.json({ data });
+        }
+    });
 })
 
 // Start the server and listen to the port
