@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
+app.use(express.json()); // Parses JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
+
 // Specify a port number for the server
 const port = 3001;
 
@@ -27,20 +30,20 @@ connection.connect(error => {
     }
 })
 
+app.get('/', function(req, res) {
+    res.send("Hello!");
+});
+
 // Add a new user to users table
 app.post('/new-user', (req, res) => {
     var reqBody = req.body;
 
-    const username = req.username;
-    const password = req.password;
+    const username = reqBody.username;
+    const password = reqBody.password;
     
-    const queryString = `INSERT INTO users (username, passHash) VALUES ('${username}', '${password})`;
-    connection.query(mysql, (err, res) => {
-        if (err) {
-            return res.json({ error: err.sqlMessage });
-        } else {
-            return res.json({ data });
-        }
+    const queryString = `INSERT INTO users (username, passHash) VALUES (?, ?)`;
+    connection.query(queryString, [username, password], (err, res) => {
+        if (err) throw err;
     });
 })
 

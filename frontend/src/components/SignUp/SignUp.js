@@ -19,7 +19,7 @@ const SignUp = () => {
                     <input type="text" placeholder="Enter password" onChange={(e) => setPassword(e.target.value)} />
                 </div>
 
-                <button onClick={newUser(username, password)}>Sign up</button>
+                <button onClick={() => newUser(username, password)}>Sign up</button>
             </form>
             <p> Already have an account? <Link to="/">Log In Here!</Link></p>
         </div>
