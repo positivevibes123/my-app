@@ -1,10 +1,16 @@
+const { sessionKey, dbPasswd } = require('./private');
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const session = require('express-session');
 
 // Create instance of express application
 const app = express();
 app.use(cors());
+
+// Creates session object to store session data
+app.use(session({secret: sessionKey}));
 
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
@@ -16,7 +22,7 @@ const port = 3001;
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'PASSWORD',
+    password: dbPasswd,
     database: 'app_schema'
 });
 
@@ -43,9 +49,31 @@ app.post('/new-user', (req, res) => {
     
     const queryString = `INSERT INTO users (username, passHash) VALUES (?, ?)`;
     connection.query(queryString, [username, password], (err, res) => {
-        if (err) throw err;
+        if (err) {
+            return res.status(500).json({ error: "Internal server error" });
+        }
     });
 })
+
+// Check to see if a user exists in the users table
+app.post('/login', (req, res) => {
+    var reqBody = req.body;
+
+    const username = reqBody.username;
+    const password = reqBody.password;
+
+    const queryString = `SELECT username FROM users WHERE username = ? AND passHash = ?`;
+    connection.query(queryString, [username, password], (err, res) => {
+        if (err) {
+            return res.status(500).json({ error: "Internal server error" });
+        }
+
+        // Login was successful
+        if (res.length > 0) {
+
+        }
+    });
+});
 
 // Start the server and listen to the port
 

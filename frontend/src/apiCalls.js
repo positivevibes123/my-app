@@ -10,3 +10,13 @@ export const newUser = async (username, password) => {
         throw err;
     }
 };
+
+export const getUser = async (username, password) => {
+    try {
+        const res = await axios.post("http://localhost:3001/login", {username, password});
+        return res.data;
+    } catch (err) {
+        console.log("There was a problem finding this user in the database.")
+        throw err;
+    }
+};
