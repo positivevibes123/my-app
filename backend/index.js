@@ -47,26 +47,30 @@ app.post('/new-user', (req, res) => {
     const username = reqBody.username;
     const password = reqBody.password;
 
+    if (!username || !password) {
+        console.log('Username/password cannot be empty')
+        return res.status(400).json({ error: 'Username/password cannot be empty' });
+    }
+
     // Check to make sure a user with the selected username doesn't already exist
     const checkQuery = `SELECT * FROM users WHERE username = ?`;
 
     connection.query(checkQuery, [username], (err, results) => {
         if (err) {
             console.log("Error checking username against database for signup.")
-            console.log(err);
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ error: "Error checking to see if user in database" });
         }
 
         if (results.length > 0) {
             console.log("User already exists with this username.");
-            return res.status(400).json({ error: "Username already exists" });
+            return res.status(400).json({ error: "User already exists with this username." });
         } else {
             // If the username doesn't exist yet, get added to database
             const queryString = `INSERT INTO users (username, passHash) VALUES (?, ?)`;
             connection.query(queryString, [username, password], (err, results) => {
                 if (err) {
                     console.log("Error adding new user to database.");
-                    return res.status(500).json({ error: "Internal server error" });
+                    return res.status(500).json({ error: "Error adding new user to database." });
                 }
 
                 if (results.length > 0) {
@@ -80,14 +84,18 @@ app.post('/new-user', (req, res) => {
 })
 
 // Check to see if a user exists in the users table
-app.post('/login', (req, results) => {
+app.post('/login', (req, res) => {
     var reqBody = req.body;
 
     const username = reqBody.username;
     const password = reqBody.password;
 
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username/password cannot be empty' });
+    }
+
     const queryString = `SELECT username FROM users WHERE username = ? AND passHash = ?`;
-    connection.query(queryString, [username, password], (err, res) => {
+    connection.query(queryString, [username, password], (err, results) => {
         if (err) {
             return res.status(500).json({ error: "Internal server error" });
         }
