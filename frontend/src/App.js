@@ -4,16 +4,16 @@ import SignUp from './components/SignUp/SignUp'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css'
 
-export default class App extends React.Component {
-    render() {
-        return (
-            <BrowserRouter>
-                <Routes>
-                    <Route path='/' element={<SignIn />} />
-                    <Route path='/SignUp' element={<SignUp />} />
-                </Routes>
-    
-            </BrowserRouter>
-        );
-    }
-}
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<SignIn />} />
+                <Route path='/SignUp' element={<SignUp />} />
+            </Routes>
+
+        </BrowserRouter>
+    );
+};
+
+export default App;

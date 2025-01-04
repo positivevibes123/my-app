@@ -2,15 +2,31 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import styles from './SignIn.module.css';
 import { useState } from 'react';
+import axios from 'axios';
 
 const SignIn = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const getUser = async (username, password) => {
+        try {
+            const res = await axios.post("http://localhost:3001/login", {username, password});
+            return res.data;
+        } catch (err) {
+            console.log("There was a problem finding this user in the database.")
+            throw err;
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        getUser(username, password);
+    };
+
     return(
         <div className={styles.formcontainer}>
             <h2>Login</h2>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div className="form-control">
                     <input type="text" placeholder="Enter username" onChange={(e) => setUsername(e.target.value)} />
                 </div>
