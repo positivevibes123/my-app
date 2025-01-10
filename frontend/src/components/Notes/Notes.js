@@ -17,8 +17,7 @@ class Notes extends Component {
     saveItems = async () => {
         // We want to save our items to the database.
         try {
-            const items = this.state.items;
-            const res = await axios.post("http://localhost:3001/save-list", {items});
+            const res = await axios.post("http://localhost:3001/save-list", {tasks: this.state.items});
             return res.data;
         } catch (err) {
             console.log("There was a problem finding this user in the database.")

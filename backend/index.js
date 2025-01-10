@@ -116,7 +116,9 @@ app.post('/login', (req, res) => {
 
 // Save array of tasks to db
 app.get('/save-list', (req, res) => {
-
+    const tasks = req.body.tasks;
+    
+    // Add code here...
 });
 
 // Start the server and listen to the port
