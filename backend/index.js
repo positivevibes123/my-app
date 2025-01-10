@@ -94,7 +94,7 @@ app.post('/login', (req, res) => {
         return res.status(400).json({ error: 'Username/password cannot be empty' });
     }
 
-    const queryString = `SELECT username FROM users WHERE username = ? AND passHash = ?`;
+    const queryString = `SELECT id FROM users WHERE username = ? AND passHash = ?`;
     connection.query(queryString, [username, password], (err, results) => {
         if (err) {
             return res.status(500).json({ error: "Internal server error" });
@@ -103,13 +103,20 @@ app.post('/login', (req, res) => {
         // Login was successful
         if (results.length > 0) {
             req.session.loggedIn = true;
-            req.session.username = username;
+            const sessionId = results[0].id;
+            req.session.id = sessionId;
+            console.log("Session id: " + sessionId);
             return res.status(200).json({ message: "Login successful" });
         } else {
             // Invalid login
             return res.status(401).json({ error: "Invalid username or password" });
         }
     });
+});
+
+// Save array of tasks to db
+app.get('/save-list', (req, res) => {
+
 });
 
 // Start the server and listen to the port
