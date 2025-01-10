@@ -115,10 +115,37 @@ app.post('/login', (req, res) => {
 });
 
 // Save array of tasks to db
-app.get('/save-list', (req, res) => {
+app.post('/save-list', (req, res) => {
     const tasks = req.body.tasks;
-    
-    // Add code here...
+
+    if (!Array.isArray(tasks)) {
+        return res.status(400).json({ message: 'Invalid data format. Expected an array of tasks.' });
+    }
+
+    // Prepare SQL query
+    const insertTaskQuery = `INSERT INTO tasks (text, \`key\`, id) VALUES (?, ?, ?)`;
+
+    // Loop through the tasks array and insert each task into the database
+    tasks.forEach(task => {
+        const { text, key } = task;
+        const id = req.session?.id; // Retrieve session ID if available
+
+        if (!text || !key) {
+            console.log('Missing text or key in task:', task);
+            return; // Skip invalid task
+        }
+
+        connection.query(insertTaskQuery, [text, key, id], (err) => {
+            if (err) {
+                console.error('Error inserting task into database:', err);
+            } else {
+                console.log(`Task "${text}" with key "${key}" successfully inserted.`);
+            }
+        });
+    });
+
+    // Send a response after processing all tasks
+    res.status(200).json({ message: 'Tasks saved successfully' });
 });
 
 // Start the server and listen to the port
