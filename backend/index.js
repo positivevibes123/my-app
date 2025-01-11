@@ -122,24 +122,30 @@ app.post('/save-list', (req, res) => {
         return res.status(400).json({ message: 'Invalid data format. Expected an array of tasks.' });
     }
 
+     // Transform tasks to use 'text_key' (key term is reserved in SQL)
+     const transformedTasks = tasks.map(task => ({
+        text: task.text,
+        text_key: task.key, // Map 'key' to 'text_key'
+    }));
+
     // Prepare SQL query
-    const insertTaskQuery = `INSERT INTO tasks (text, \`key\`, id) VALUES (?, ?, ?)`;
+    const insertTaskQuery = `INSERT INTO tasks (text, text_key, id) VALUES (?, ?, ?)`;
 
     // Loop through the tasks array and insert each task into the database
-    tasks.forEach(task => {
-        const { text, key } = task;
+    transformedTasks.forEach(task => {
+        const { text, text_key } = task;
         const id = req.session?.id; // Retrieve session ID if available
 
-        if (!text || !key) {
+        if (!text || !text_key) {
             console.log('Missing text or key in task:', task);
             return; // Skip invalid task
         }
 
-        connection.query(insertTaskQuery, [text, key, id], (err) => {
+        connection.query(insertTaskQuery, [text, text_key, id], (err) => {
             if (err) {
                 console.error('Error inserting task into database:', err);
             } else {
-                console.log(`Task "${text}" with key "${key}" successfully inserted.`);
+                console.log(`Task "${text}" with key "${text_key}" successfully inserted.`);
             }
         });
     });
