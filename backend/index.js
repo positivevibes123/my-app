@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 
 // Creates session object to store session data
-app.use(session({secret: sessionKey, name: 'uniqueSessionID', saveUninitialized: false}));
+app.use(session({secret: sessionKey, name: 'uniqueSessionID', saveUninitialized: true}));
 
 app.use(express.json()); // Parses JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parses URL-encoded bodies
@@ -114,7 +114,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Save array of tasks to db
+// Save list of user's tasks to db
 app.post('/save-list', (req, res) => {
     const tasks = req.body.tasks;
 
@@ -152,6 +152,27 @@ app.post('/save-list', (req, res) => {
 
     // Send a response after processing all tasks
     res.status(200).json({ message: 'Tasks saved successfully' });
+});
+
+// Retrieve list of user's tasks from db
+app.get('/get-list', (req, res) => {
+    const id = req.session?.id;
+
+    if (!id) {
+        return res.status(401).json({ message: 'Unauthorized. Session ID missing.' });
+    }
+
+    const fetchQuery = `SELECT text, text_key FROM tasks WHERE id = ?`;
+    
+    connection.query(fetchQuery, [id], (err, results) => {
+        if (err) {
+            console.error('Error fetching tasks:', err);
+            return res.status(500).json({ message: 'Error fetching tasks.' });
+        }
+
+        console.log("Id is: " + id);
+        res.status(200).json(results);
+    });
 });
 
 // Start the server and listen to the port

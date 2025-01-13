@@ -15,6 +15,20 @@ class Notes extends Component {
         this.saveItems = this.saveItems.bind(this);
     }
 
+    // Call code to retrieve tasks from database
+    async componentDidMount() {
+      try {
+            const res = await axios.get("http://localhost:3001/get-list");
+            const fetchedItems = res.data.map(task => ({
+                text: task.text,
+                key: task.text_key,
+            }));
+            this.setState({ items: fetchedItems });
+        } catch (err) {
+            console.error("Error loading tasks:", err);
+        }
+    }
+
     saveItems = async () => {
         // We want to save our items to the database.
         try {
